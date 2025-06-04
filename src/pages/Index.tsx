@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Camera, Plus, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -64,10 +63,24 @@ const Index = () => {
       const result = await response.json();
       console.log('Recommendations Response:', result);
       
-      // Extract recommendations from the API response
+      let extractedRecommendations: string[] = [];
+
+      // Handle different response formats
       if (result.recommandations && Array.isArray(result.recommandations)) {
-        const recs = result.recommandations.map((rec: any) => rec.description || '').filter((desc: string) => desc.length > 0);
-        setRecommendations(recs);
+        // Handle format with "recommandations" array
+        extractedRecommendations = result.recommandations.map((rec: any) => {
+          // Try different property names
+          return rec.description || rec.action || '';
+        }).filter((desc: string) => desc.length > 0);
+      } else if (result.recommandations_mildiou_precoce && Array.isArray(result.recommandations_mildiou_precoce)) {
+        // Handle format with "recommandations_mildiou_precoce" array
+        extractedRecommendations = result.recommandations_mildiou_precoce.map((rec: any) => {
+          return rec.description || rec.action || '';
+        }).filter((desc: string) => desc.length > 0);
+      }
+
+      if (extractedRecommendations.length > 0) {
+        setRecommendations(extractedRecommendations);
       } else {
         setRecommendations(['Unable to fetch recommendations at this time']);
       }
