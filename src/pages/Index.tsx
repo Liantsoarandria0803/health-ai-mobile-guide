@@ -33,15 +33,15 @@ const Index = () => {
         throw new Error('Failed to analyze image');
       }
 
-      const result = await response.text();
-      const cleanResult = result.replace(/['"]/g, '');
-      setAnalysisResult(cleanResult);
+      const result = await response.json();
+      console.log('API Response:', result);
       
-      // Simulate confidence (in real API this might be included)
-      setConfidence(97.78);
+      // Correctly map the API response
+      setAnalysisResult(result.predicted_class || '');
+      setConfidence(Math.round((result.confidence || 0) * 100));
 
       // Get recommendations
-      await getRecommendations(cleanResult);
+      await getRecommendations(result.predicted_class);
       
       setTimeout(() => {
         setCurrentPage('results');
@@ -61,12 +61,16 @@ const Index = () => {
         throw new Error('Failed to get recommendations');
       }
 
-      const result = await response.text();
-      const cleanResult = result.replace(/['"]/g, '');
+      const result = await response.json();
+      console.log('Recommendations Response:', result);
       
-      // Split recommendations by common separators
-      const recs = cleanResult.split(/[.;,]/).filter(rec => rec.trim().length > 0).slice(0, 3);
-      setRecommendations(recs.map(rec => rec.trim()));
+      // Extract recommendations from the API response
+      if (result.recommandations && Array.isArray(result.recommandations)) {
+        const recs = result.recommandations.map((rec: any) => rec.description || '').filter((desc: string) => desc.length > 0);
+        setRecommendations(recs);
+      } else {
+        setRecommendations(['Unable to fetch recommendations at this time']);
+      }
       
     } catch (error) {
       console.error('Recommendations error:', error);
