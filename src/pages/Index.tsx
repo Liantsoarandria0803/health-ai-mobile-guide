@@ -91,18 +91,81 @@ const Index = () => {
     }
   };
 
-  const handleCameraCapture = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        handleFileSelect(file);
-      }
-    };
-    input.click();
+  const handleCameraCapture = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+
+      const modal = document.createElement('div');
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '1000';
+
+      const canvas = document.createElement('canvas');
+      const captureButton = document.createElement('button');
+      captureButton.textContent = 'Capture';
+      captureButton.style.position = 'absolute';
+      captureButton.style.color = '#fff';
+      captureButton.style.left = '50%';
+      captureButton.style.transform = 'translateX(-50%)';
+      captureButton.style.bottom = '20px';
+      captureButton.style.padding = '10px 20px';
+      captureButton.style.backgroundColor = 'green';
+      captureButton.style.border = 'none';
+      captureButton.style.borderRadius = '5px';
+      captureButton.style.cursor = 'pointer';
+
+      const closeButton = document.createElement('button');
+      closeButton.textContent = 'Close';
+      closeButton.style.color = '#fff';
+      closeButton.style.position = 'absolute';
+      closeButton.style.top = '20px';
+      closeButton.style.right = '20px';
+      closeButton.style.padding = '10px 20px';
+      closeButton.style.backgroundColor = 'red';
+      closeButton.style.border = 'none';
+      closeButton.style.borderRadius = '5px';
+      closeButton.style.cursor = 'pointer';
+
+      modal.appendChild(video);
+      modal.appendChild(captureButton);
+      modal.appendChild(closeButton);
+      document.body.appendChild(modal);
+
+      captureButton.onclick = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const context = canvas.getContext('2d');
+        if (context) {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], 'captured-image.jpg', { type: 'image/jpeg' });
+              handleFileSelect(file);
+            }
+          }, 'image/jpeg');
+        }
+        stream.getTracks().forEach((track) => track.stop());
+        document.body.removeChild(modal);
+      };
+
+      closeButton.onclick = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        document.body.removeChild(modal);
+      };
+    } catch (error) {
+      console.error('Camera capture error:', error);
+      toast.error('Unable to access the camera. Please try again.');
+    }
   };
 
   const handleImageImport = () => {
