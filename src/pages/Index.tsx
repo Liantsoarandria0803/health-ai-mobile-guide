@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AnalysisPage from '@/components/AnalysisPage';
 import ResultsPage from '@/components/ResultsPage';
+import Logo from '@/components/logo';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState<'home' | 'analysis' | 'results'>('home');
@@ -223,7 +224,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-8">
         {/* Logo */}
-        <div className="mb-16">
+        {/* <div className="mb-16">
           <div className="w-32 h-32 bg-amber-900 rounded-t-full relative mx-auto mb-4">
             <div className="absolute inset-4 bg-orange-200 rounded-t-full">
               <div className="absolute top-4 left-6 w-2 h-2 bg-amber-900 rounded-full"></div>
@@ -237,7 +238,8 @@ const Index = () => {
           <h1 className="text-2xl font-light text-gray-400 text-center tracking-wider">
             POTATO GUARD
           </h1>
-        </div>
+        </div> */}
+        <Logo />
 
         {/* Action Buttons */}
         <div className="w-full max-w-sm space-y-4">

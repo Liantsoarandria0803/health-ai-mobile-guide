@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import Logo from './logo';
 interface ResultsPageProps {
   disease: string;
   confidence: number;
@@ -39,21 +39,9 @@ const ResultsPage = ({ disease, confidence, recommendations, selectedFile, onHom
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center px-6 pb-8">
         {/* Logo */}
-        <div className="mb-8">
-          <div className="w-24 h-24 bg-amber-900 rounded-t-full relative mx-auto mb-3">
-            <div className="absolute inset-3 bg-orange-200 rounded-t-full">
-              <div className="absolute top-3 left-4 w-1.5 h-1.5 bg-amber-900 rounded-full"></div>
-              <div className="absolute top-4 right-4 w-1.5 h-1.5 bg-amber-900 rounded-full"></div>
-              <div className="absolute top-6 left-3 w-1 h-1 bg-amber-900 rounded-full"></div>
-              <div className="absolute top-7 right-3 w-1 h-1 bg-amber-900 rounded-full"></div>
-              <div className="absolute bottom-4 left-6 w-1 h-1 bg-amber-900 rounded-full"></div>
-              <div className="absolute bottom-5 right-6 w-1 h-1 bg-amber-900 rounded-full"></div>
-            </div>
-          </div>
-          <h1 className="text-lg font-light text-gray-400 text-center tracking-wider">
-            POTATO GUARD
-          </h1>
-        </div>
+      <div className="w-32 h-32 mb-6">
+        <Logo />
+      </div>
 
         {/* Image Display */}
         {imageUrl && (

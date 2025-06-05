@@ -1,5 +1,6 @@
 
 import { ArrowRight } from 'lucide-react';
+import Logo from './logo';
 
 interface AnalysisPageProps {
   selectedFile: File | null;
@@ -20,7 +21,7 @@ const AnalysisPage = ({ selectedFile, onBack }: AnalysisPageProps) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-8">
         {/* Logo */}
-        <div className="mb-16">
+        {/* <div className="mb-16">
           <div className="w-32 h-32 bg-amber-900 rounded-t-full relative mx-auto mb-4">
             <div className="absolute inset-4 bg-orange-200 rounded-t-full">
               <div className="absolute top-4 left-6 w-2 h-2 bg-amber-900 rounded-full"></div>
@@ -34,7 +35,8 @@ const AnalysisPage = ({ selectedFile, onBack }: AnalysisPageProps) => {
           <h1 className="text-2xl font-light text-gray-400 text-center tracking-wider">
             POTATO GUARD
           </h1>
-        </div>
+        </div> */}
+        <Logo />
 
         {/* Loading Spinner */}
         <div className="mb-8">
