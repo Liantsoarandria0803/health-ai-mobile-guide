@@ -1,19 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Camera, Plus, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AnalysisPage from '@/components/AnalysisPage';
 import ResultsPage from '@/components/ResultsPage';
+import LoginPage from '@/components/LoginPage';
+import RegisterPage from '@/components/RegisterPage';
+import UserMenu from '@/components/UserMenu';
 import Logo from '@/components/logo';
 
 const Index = () => {
-  const [currentPage, setCurrentPage] = useState<'home' | 'analysis' | 'results'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'analysis' | 'results' | 'login' | 'register'>('home');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [analysisResult, setAnalysisResult] = useState<string>('');
   const [confidence, setConfidence] = useState<number>(0);
   const [recommendations, setRecommendations] = useState<string[]>([]);
+  const [userData, setUserData] = useState<any>(null);
+
+  // Check if user is already logged in on component mount
+  useEffect(() => {
+    const savedUserData = localStorage.getItem('userData');
+    if (savedUserData) {
+      setUserData(JSON.parse(savedUserData));
+    }
+  }, []);
 
   const handleFileSelect = (file: File) => {
+    if (!userData) {
+      toast.error('Please login first to analyze images');
+      setCurrentPage('login');
+      return;
+    }
+    
     setSelectedFile(file);
     setCurrentPage('analysis');
     analyzeImage(file);
@@ -190,6 +208,42 @@ const Index = () => {
     setRecommendations([]);
   };
 
+  const handleLoginSuccess = (data: any) => {
+    setUserData(data);
+    setCurrentPage('home');
+  };
+
+  const handleLogout = () => {
+    setUserData(null);
+    resetToHome();
+  };
+
+  const handleRegisterSuccess = () => {
+    setCurrentPage('login');
+  };
+
+  // Login Page
+  if (currentPage === 'login') {
+    return (
+      <LoginPage 
+        onBack={resetToHome}
+        onLoginSuccess={handleLoginSuccess}
+        onSwitchToRegister={() => setCurrentPage('register')}
+      />
+    );
+  }
+
+  // Register Page
+  if (currentPage === 'register') {
+    return (
+      <RegisterPage 
+        onBack={resetToHome}
+        onRegisterSuccess={handleRegisterSuccess}
+        onSwitchToLogin={() => setCurrentPage('login')}
+      />
+    );
+  }
+
   if (currentPage === 'analysis') {
     return (
       <AnalysisPage 
@@ -215,30 +269,21 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100 flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-4 pt-12">
-        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-white rounded-full"></div>
-        </div>
+        {userData ? (
+          <UserMenu userData={userData} onLogout={handleLogout} />
+        ) : (
+          <button 
+            onClick={() => setCurrentPage('login')}
+            className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center"
+          >
+            <div className="w-4 h-4 border-2 border-white rounded-full"></div>
+          </button>
+        )}
         <ArrowRight className="w-6 h-6 text-orange-500" />
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-8">
-        {/* Logo */}
-        {/* <div className="mb-16">
-          <div className="w-32 h-32 bg-amber-900 rounded-t-full relative mx-auto mb-4">
-            <div className="absolute inset-4 bg-orange-200 rounded-t-full">
-              <div className="absolute top-4 left-6 w-2 h-2 bg-amber-900 rounded-full"></div>
-              <div className="absolute top-6 right-6 w-2 h-2 bg-amber-900 rounded-full"></div>
-              <div className="absolute top-8 left-4 w-1.5 h-1.5 bg-amber-900 rounded-full"></div>
-              <div className="absolute top-10 right-4 w-1.5 h-1.5 bg-amber-900 rounded-full"></div>
-              <div className="absolute bottom-6 left-8 w-1.5 h-1.5 bg-amber-900 rounded-full"></div>
-              <div className="absolute bottom-8 right-8 w-1.5 h-1.5 bg-amber-900 rounded-full"></div>
-            </div>
-          </div>
-          <h1 className="text-2xl font-light text-gray-400 text-center tracking-wider">
-            POTATO GUARD
-          </h1>
-        </div> */}
         <Logo />
 
         {/* Action Buttons */}
@@ -259,6 +304,20 @@ const Index = () => {
             Import a crop picture
           </Button>
         </div>
+
+        {/* Login prompt for unauthenticated users */}
+        {!userData && (
+          <div className="mt-8 text-center">
+            <p className="text-gray-600 mb-4">Login to access all features</p>
+            <Button
+              onClick={() => setCurrentPage('login')}
+              variant="outline"
+              className="px-6 py-2 rounded-full"
+            >
+              Login / Sign Up
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
