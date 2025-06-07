@@ -54,8 +54,8 @@ const UserMenu = ({ userData, onLogout }: UserMenuProps) => {
             onClick={() => setShowMenu(false)}
           />
           
-          {/* Menu */}
-          <div className="absolute top-12 right-0 bg-white rounded-xl shadow-xl border border-gray-200 p-6 min-w-64 z-50 animate-fade-in">
+          {/* Menu - positioned to stay within viewport */}
+          <div className="absolute top-12 left-0 transform -translate-x-full translate-x-10 bg-white rounded-xl shadow-xl border border-gray-200 p-6 min-w-64 z-50 animate-fade-in">
             {/* User Info */}
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
