@@ -28,7 +28,12 @@ const LoginPage = ({ onBack, onLoginSuccess, onSwitchToRegister }: LoginPageProp
     setIsLoading(true);
     
     try {
-      const response = await fetch(`http://localhost:8080/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      const response = await fetch(`http://localhost:8080/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
       
       if (!response.ok) {
         throw new Error('Login failed');
