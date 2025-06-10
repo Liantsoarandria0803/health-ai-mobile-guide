@@ -10,26 +10,26 @@ interface HistoricalDetailPageProps {
 }
 
 const HistoricalDetailPage = ({ historyItem, onBack, onHome }: HistoricalDetailPageProps) => {
-  const formatDiseaseName = (maladie: string) => {
-    if (maladie.includes('healthy')) {
+  const formatDiseaseName = (nomMaladie: string) => {
+    if (nomMaladie.includes('healthy')) {
       return 'Healthy Plant';
     }
-    if (maladie.includes('Early_blight')) {
+    if (nomMaladie.includes('Early_blight')) {
       return 'Early Blight';
     }
-    if (maladie.includes('Late_blight')) {
+    if (nomMaladie.includes('Late_blight')) {
       return 'Late Blight';
     }
-    return maladie.replace('Potato___', '').replace('_', ' ');
+    return nomMaladie.replace('Potato___', '').replace('_', ' ');
   };
 
   const getRecommendations = () => {
-    if (!historyItem?.recommandation?.contenu) {
+    if (!historyItem?.texte) {
       return ['No recommendations available'];
     }
     
     // Split recommendations by line breaks and filter out empty lines
-    return historyItem.recommandation.contenu
+    return historyItem.texte
       .split('\n')
       .filter((line: string) => line.trim().length > 0)
       .map((line: string) => line.trim());
@@ -62,13 +62,13 @@ const HistoricalDetailPage = ({ historyItem, onBack, onHome }: HistoricalDetailP
         {/* Disease Name */}
         <div className="w-full max-w-sm mb-6">
           <h2 className="text-2xl font-bold text-center text-gray-800 capitalize">
-            {formatDiseaseName(historyItem.diagnostic.maladie)}
+            {formatDiseaseName(historyItem.nomMaladie)}
           </h2>
           <p className="text-center text-gray-600 mt-2">
-            Confidence: {Math.round(historyItem.diagnostic.confiance * 100)}%
+            Confidence: {Math.round(historyItem.scoreProbabilite * 100)}%
           </p>
           <p className="text-center text-gray-500 text-sm mt-1">
-            {new Date(historyItem.diagnostic.dateCreation).toLocaleDateString()}
+            {new Date(historyItem.dateDiagnostic).toLocaleDateString()}
           </p>
         </div>
 
