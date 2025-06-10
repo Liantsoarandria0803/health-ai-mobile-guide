@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Camera, Plus, ArrowRight, History } from 'lucide-react';
+import { Camera, Plus, ArrowRight, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AnalysisPage from '@/components/AnalysisPage';
@@ -8,7 +8,7 @@ import LoginPage from '@/components/LoginPage';
 import RegisterPage from '@/components/RegisterPage';
 import HistoricalPage from '@/components/HistoricalPage';
 import HistoricalDetailPage from '@/components/HistoricalDetailPage';
-import UserMenu from '@/components/UserMenu';
+import AppSidebar from '@/components/AppSidebar';
 import Logo from '@/components/logo';
 
 const Index = () => {
@@ -20,6 +20,7 @@ const Index = () => {
   const [userData, setUserData] = useState<any>(null);
   const [diagnosticId, setDiagnosticId] = useState<number | null>(null);
   const [selectedHistoryItem, setSelectedHistoryItem] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Check if user is already logged in on component mount
   useEffect(() => {
@@ -317,10 +318,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100 flex flex-col">
+      {/* Sidebar */}
+      <AppSidebar
+        userData={userData}
+        onLogout={handleLogout}
+        onHistoricalClick={() => setCurrentPage('historical')}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
       {/* Header */}
       <div className="flex justify-between items-center p-4 pt-12">
         {userData ? (
-          <UserMenu userData={userData} onLogout={handleLogout} />
+          <button 
+            onClick={() => setSidebarOpen(true)}
+            className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+          >
+            <Menu className="w-4 h-4 text-white" />
+          </button>
         ) : (
           <button 
             onClick={() => setCurrentPage('login')}
@@ -353,17 +368,6 @@ const Index = () => {
             <Plus className="w-6 h-6" />
             Import a crop picture
           </Button>
-
-          {/* Historical Button - Only show for logged in users */}
-          {userData && (
-            <Button
-              onClick={() => setCurrentPage('historical')}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6 rounded-full text-lg font-medium flex items-center justify-center gap-3"
-            >
-              <History className="w-6 h-6" />
-              View Historical Data
-            </Button>
-          )}
         </div>
 
         {/* Login prompt for unauthenticated users */}
