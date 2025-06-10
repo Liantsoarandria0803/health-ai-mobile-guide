@@ -46,7 +46,7 @@ const Index = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('https://liantsoaxx08-potatoguardapi.hf.space/predict/', {
+      const response = await fetch('http://localhost:8080/predict/', {
         method: 'POST',
         body: formData,
       });
@@ -78,7 +78,7 @@ const Index = () => {
 
   const getRecommendations = async (disease: string, diagnosticId: number) => {
     try {
-      const response = await fetch(`https://liantsoaxx08-potatoguardapi.hf.space/recommendation?disease=${encodeURIComponent(disease)}&diagnostic_id=${diagnosticId}&user_id=${userData.user.id}`);
+      const response = await fetch(`http://localhost:8080/recommendation?disease=${encodeURIComponent(disease)}&diagnostic_id=${diagnosticId}&user_id=${userData.user.id}`);
       
       if (!response.ok) {
         throw new Error('Failed to get recommendations');
