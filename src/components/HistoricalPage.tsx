@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,18 +11,13 @@ interface HistoricalPageProps {
 }
 
 interface HistoryItem {
-  id: number;
-  diagnostic: {
-    id: number;
-    maladie: string;
-    confiance: number;
-    dateCreation: string;
-    photo: string;
-  };
-  recommandation: {
-    id: number;
-    contenu: string;
-  };
+  idHistorique: number;
+  idCompte: number;
+  nomMaladie: string;
+  scoreProbabilite: number;
+  dateDiagnostic: string;
+  photo: string;
+  texte: string;
 }
 
 const HistoricalPage = ({ userData, onBack, onItemClick }: HistoricalPageProps) => {
@@ -69,28 +65,28 @@ const HistoricalPage = ({ userData, onBack, onItemClick }: HistoricalPageProps) 
     }
   };
 
-  const formatDiseaseName = (maladie: string) => {
-    if (maladie.includes('healthy')) {
+  const formatDiseaseName = (nomMaladie: string) => {
+    if (nomMaladie.includes('healthy')) {
       return 'healthy plant';
     }
-    if (maladie.includes('Early_blight')) {
+    if (nomMaladie.includes('Early_blight')) {
       return 'Early blight';
     }
-    if (maladie.includes('Late_blight')) {
+    if (nomMaladie.includes('Late_blight')) {
       return 'Late blight';
     }
-    return maladie.replace('Potato___', '').replace('_', ' ');
+    return nomMaladie.replace('Potato___', '').replace('_', ' ');
   };
 
-  const getIconColor = (maladie: string) => {
-    if (maladie.includes('healthy')) {
+  const getIconColor = (nomMaladie: string) => {
+    if (nomMaladie.includes('healthy')) {
       return 'bg-green-700';
     }
     return 'bg-orange-500';
   };
 
-  const getIcon = (maladie: string) => {
-    if (maladie.includes('healthy')) {
+  const getIcon = (nomMaladie: string) => {
+    if (nomMaladie.includes('healthy')) {
       return <Leaf className="w-6 h-6 text-white" />;
     }
     return (
@@ -140,19 +136,19 @@ const HistoricalPage = ({ userData, onBack, onItemClick }: HistoricalPageProps) 
           <div className="space-y-4">
             {historyData.map((item) => (
               <button
-                key={item.id}
+                key={item.idHistorique}
                 onClick={() => onItemClick(item)}
                 className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-orange-100 transition-colors text-left"
               >
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${getIconColor(item.diagnostic.maladie)}`}>
-                  {getIcon(item.diagnostic.maladie)}
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${getIconColor(item.nomMaladie)}`}>
+                  {getIcon(item.nomMaladie)}
                 </div>
                 <div className="flex-1">
                   <div className="text-gray-800 font-medium">
-                    {formatDiseaseName(item.diagnostic.maladie)}
+                    {formatDiseaseName(item.nomMaladie)}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {new Date(item.diagnostic.dateCreation).toLocaleDateString()}
+                    {new Date(item.dateDiagnostic).toLocaleDateString()}
                   </div>
                 </div>
               </button>
