@@ -78,7 +78,11 @@ const Index = () => {
 
   const getRecommendations = async (disease: string, diagnosticId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/recommendation?disease=${encodeURIComponent(disease)}&diagnostic_id=${diagnosticId}&user_id=${userData.user.id}`);
+      // Get user ID from the updated data structure
+      const userId = userData.user_id || userData.user?.id;
+      console.log('User ID for recommendations:', userId);
+      
+      const response = await fetch(`http://localhost:8080/recommendation?disease=${encodeURIComponent(disease)}&diagnostic_id=${diagnosticId}&user_id=${userId}`);
       
       if (!response.ok) {
         throw new Error('Failed to get recommendations');
@@ -99,6 +103,11 @@ const Index = () => {
       } else if (result.recommandations_mildiou_precoce && Array.isArray(result.recommandations_mildiou_precoce)) {
         // Handle format with "recommandations_mildiou_precoce" array
         extractedRecommendations = result.recommandations_mildiou_precoce.map((rec: any) => {
+          return rec.description || rec.action || '';
+        }).filter((desc: string) => desc.length > 0);
+      } else if (result.recommandations_milibou && Array.isArray(result.recommandations_milibou)) {
+        // Handle format with "recommandations_milibou" array (from backend code)
+        extractedRecommendations = result.recommandations_milibou.map((rec: any) => {
           return rec.description || rec.action || '';
         }).filter((desc: string) => desc.length > 0);
       }

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,14 +29,16 @@ const HistoricalPage = ({ userData, onBack, onItemClick }: HistoricalPageProps) 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (userData?.user?.id) {
-      fetchHistoricalData();
+    // Get user ID from the updated data structure
+    const userId = userData?.user_id || userData?.user?.id;
+    if (userId) {
+      fetchHistoricalData(userId);
     }
   }, [userData]);
 
-  const fetchHistoricalData = async () => {
+  const fetchHistoricalData = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/historique/${userData.user.id}`);
+      const response = await fetch(`http://localhost:8080/historique/${userId}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch historical data');
@@ -156,7 +157,7 @@ const HistoricalPage = ({ userData, onBack, onItemClick }: HistoricalPageProps) 
       {/* Footer with Username */}
       <div className="bg-orange-400 p-6 text-center">
         <div className="text-lg font-semibold text-gray-800">
-          {userData?.user?.username || 'User'}
+          {userData?.user?.username || userData?.username || 'User'}
         </div>
       </div>
     </div>
