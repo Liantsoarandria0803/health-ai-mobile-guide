@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Camera, Plus, ArrowRight } from 'lucide-react';
+import { Camera, Plus, ArrowRight, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AnalysisPage from '@/components/AnalysisPage';
 import ResultsPage from '@/components/ResultsPage';
 import LoginPage from '@/components/LoginPage';
 import RegisterPage from '@/components/RegisterPage';
+import HistoricalPage from '@/components/HistoricalPage';
+import HistoricalDetailPage from '@/components/HistoricalDetailPage';
 import UserMenu from '@/components/UserMenu';
 import Logo from '@/components/logo';
 
 const Index = () => {
-  const [currentPage, setCurrentPage] = useState<'home' | 'analysis' | 'results' | 'login' | 'register'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'analysis' | 'results' | 'login' | 'register' | 'historical' | 'historical-detail'>('home');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [analysisResult, setAnalysisResult] = useState<string>('');
   const [confidence, setConfidence] = useState<number>(0);
   const [recommendations, setRecommendations] = useState<string[]>([]);
   const [userData, setUserData] = useState<any>(null);
+  const [diagnosticId, setDiagnosticId] = useState<number | null>(null);
+  const [selectedHistoryItem, setSelectedHistoryItem] = useState<any>(null);
 
   // Check if user is already logged in on component mount
   useEffect(() => {
@@ -57,9 +61,10 @@ const Index = () => {
       // Correctly map the API response
       setAnalysisResult(result.predicted_class || '');
       setConfidence(Math.round((result.confidence || 0) * 100));
+      setDiagnosticId(result.diagnostic_id);
 
       // Get recommendations
-      await getRecommendations(result.predicted_class);
+      await getRecommendations(result.predicted_class, result.diagnostic_id);
       
       setTimeout(() => {
         setCurrentPage('results');
@@ -71,9 +76,9 @@ const Index = () => {
     }
   };
 
-  const getRecommendations = async (disease: string) => {
+  const getRecommendations = async (disease: string, diagnosticId: number) => {
     try {
-      const response = await fetch(`https://liantsoaxx08-potatoguardapi.hf.space/recommendation?disease=${encodeURIComponent(disease)}`);
+      const response = await fetch(`https://liantsoaxx08-potatoguardapi.hf.space/recommendation?disease=${encodeURIComponent(disease)}&diagnostic_id=${diagnosticId}&user_id=${userData.user.id}`);
       
       if (!response.ok) {
         throw new Error('Failed to get recommendations');
@@ -206,6 +211,8 @@ const Index = () => {
     setAnalysisResult('');
     setConfidence(0);
     setRecommendations([]);
+    setDiagnosticId(null);
+    setSelectedHistoryItem(null);
   };
 
   const handleLoginSuccess = (data: any) => {
@@ -220,6 +227,11 @@ const Index = () => {
 
   const handleRegisterSuccess = () => {
     setCurrentPage('login');
+  };
+
+  const handleHistoryItemClick = (historyItem: any) => {
+    setSelectedHistoryItem(historyItem);
+    setCurrentPage('historical-detail');
   };
 
   // Login Page
@@ -240,6 +252,28 @@ const Index = () => {
         onBack={resetToHome}
         onRegisterSuccess={handleRegisterSuccess}
         onSwitchToLogin={() => setCurrentPage('login')}
+      />
+    );
+  }
+
+  // Historical Page
+  if (currentPage === 'historical') {
+    return (
+      <HistoricalPage 
+        userData={userData}
+        onBack={resetToHome}
+        onItemClick={handleHistoryItemClick}
+      />
+    );
+  }
+
+  // Historical Detail Page
+  if (currentPage === 'historical-detail') {
+    return (
+      <HistoricalDetailPage 
+        historyItem={selectedHistoryItem}
+        onBack={() => setCurrentPage('historical')}
+        onHome={resetToHome}
       />
     );
   }
@@ -303,6 +337,17 @@ const Index = () => {
             <Plus className="w-6 h-6" />
             Import a crop picture
           </Button>
+
+          {/* Historical Button - Only show for logged in users */}
+          {userData && (
+            <Button
+              onClick={() => setCurrentPage('historical')}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6 rounded-full text-lg font-medium flex items-center justify-center gap-3"
+            >
+              <History className="w-6 h-6" />
+              View Historical Data
+            </Button>
+          )}
         </div>
 
         {/* Login prompt for unauthenticated users */}
