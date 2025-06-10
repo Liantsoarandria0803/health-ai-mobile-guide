@@ -64,10 +64,10 @@ const UserMenu = ({ userData, onLogout }: UserMenuProps) => {
                 </div>
                 <div>
                   <div className="font-semibold text-gray-800 text-lg">
-                    {userData?.user?.username || 'Utilisateur'}
+                    User ID: {userData?.userID || 'Unknown'}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {userData?.user?.email}
+                    {userData?.email || 'No email'}
                   </div>
                 </div>
               </div>

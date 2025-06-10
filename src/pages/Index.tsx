@@ -78,9 +78,16 @@ const Index = () => {
 
   const getRecommendations = async (disease: string, diagnosticId: number) => {
     try {
-      // Get user ID from the updated data structure
-      const userId = userData.user_id || userData.user?.id;
+      // Get userID from the updated data structure
+      const userId = userData.userID;
+      console.log('User data for recommendations:', userData);
       console.log('User ID for recommendations:', userId);
+      
+      if (!userId) {
+        console.error('No userID found in userData');
+        setRecommendations(['Unable to fetch recommendations: User not found']);
+        return;
+      }
       
       const response = await fetch(`http://localhost:8080/recommendation?disease=${encodeURIComponent(disease)}&diagnostic_id=${diagnosticId}&user_id=${userId}`);
       

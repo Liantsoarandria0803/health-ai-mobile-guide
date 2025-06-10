@@ -29,15 +29,22 @@ const HistoricalPage = ({ userData, onBack, onItemClick }: HistoricalPageProps) 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Get user ID from the updated data structure
-    const userId = userData?.user_id || userData?.user?.id;
+    // Get userID from the updated data structure
+    const userId = userData?.userID;
+    console.log('User data in HistoricalPage:', userData);
+    console.log('User ID for historical data:', userId);
+    
     if (userId) {
       fetchHistoricalData(userId);
+    } else {
+      console.error('No userID found in userData');
+      setIsLoading(false);
     }
   }, [userData]);
 
   const fetchHistoricalData = async (userId: number) => {
     try {
+      console.log(`Fetching historical data for user ID: ${userId}`);
       const response = await fetch(`http://localhost:8080/historique/${userId}`);
       
       if (!response.ok) {
@@ -154,10 +161,10 @@ const HistoricalPage = ({ userData, onBack, onItemClick }: HistoricalPageProps) 
         )}
       </div>
 
-      {/* Footer with Username */}
+      {/* Footer with User Email */}
       <div className="bg-orange-400 p-6 text-center">
         <div className="text-lg font-semibold text-gray-800">
-          {userData?.user?.username || userData?.username || 'User'}
+          {userData?.email || 'User'}
         </div>
       </div>
     </div>

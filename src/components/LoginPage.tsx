@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ArrowLeft, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,8 +43,14 @@ const LoginPage = ({ onBack, onLoginSuccess, onSwitchToRegister }: LoginPageProp
       
       if (result.status === 'success') {
         toast.success('Login successful!');
-        localStorage.setItem('userData', JSON.stringify(result.data));
-        onLoginSuccess(result.data);
+        // Store the data with userID structure
+        const userData = {
+          userID: result.data.userID,
+          token: result.data.token,
+          email: email // Store email for display purposes
+        };
+        localStorage.setItem('userData', JSON.stringify(userData));
+        onLoginSuccess(userData);
       } else {
         throw new Error(result.message || 'Login failed');
       }
